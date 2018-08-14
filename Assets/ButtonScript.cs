@@ -17,14 +17,19 @@ public class ButtonScript : MonoBehaviour
     {
         Debug.Log("DoInstallClick");
 #if PLAY_INSTANT
-        using (var activity = InstallLauncher.GetCurrentActivity())
+        Debug.LogFormat("Cookie max size: {0}", CookieApi.GetInstantAppCookieMaxSizeBytes());
+        var result = CookieApi.SetInstantAppCookie("test-cookie");
+        Debug.LogFormat("Set cookie result: {0}", result);
+
+        using (var activity = UnityPlayerHelper.GetCurrentActivity())
         using (var postInstallIntent = InstallLauncher.CreatePostInstallIntent(activity))
         {
             InstallLauncher.PutPostInstallIntentStringExtra(postInstallIntent, "payload", "test-payload-value");
             InstallLauncher.ShowInstallPrompt(activity, 1234, postInstallIntent, "test-referrer");
         }
 #else
-        Debug.LogErrorFormat("Intent result: {0}", InstallLauncher.GetPostInstallIntentStringExtra("payload"));
+        Debug.LogErrorFormat("Intent result: \"{0}\"", InstallLauncher.GetPostInstallIntentStringExtra("payload"));
+        Debug.LogErrorFormat("Cookie: \"{0}\"", CookieApi.GetInstantAppCookie());
 #endif
     }
 
